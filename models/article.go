@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"log"
 	"errors"
+	"reflect"
 )
 
 type ConditionType struct {
@@ -65,6 +66,27 @@ type TestProfile struct {
 }
 
 /**
+测试 测试
+ */
+func GetTest(param []ConditionType) (error, BlogArticles) {
+	o1 := orm.NewOrm()
+	qs := o1.QueryTable("test_user")
+	var article BlogArticles
+	if len(param) < 1 {
+		return errors.New("查询条件为空！"), article
+	}
+	for _, oneCondition := range param {
+		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
+	}
+	err := qs.RelatedSel().One(&article)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(article)
+	return nil, article
+}
+
+/**
 查询一条数据
  */
 func GetRow(param []ConditionType) (error, BlogArticles) {
@@ -86,22 +108,28 @@ func GetRow(param []ConditionType) (error, BlogArticles) {
 }
 
 /**
-查询一个数据
+查询一条数据中的某个字段值
  */
-func GetOne(param []ConditionType) (error, BlogArticles) {
+func GetOne(param []ConditionType,field string) (error, string) {
 	o1 := orm.NewOrm()
 	qs := o1.QueryTable("blog_articles")
 	var article BlogArticles
 	if len(param) < 1 {
-		return errors.New("查询条件为空！"), article
+		return errors.New("查询条件为空！"), ""
 	}
 	for _, oneCondition := range param {
 		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
 	}
 	err := qs.RelatedSel().One(&article)
-	if err != nil {
-		log.Println(err)
+	if err == orm.ErrNoRows {
+		return err, ""
 	}
-	log.Println(article)
-	return nil, article
+	if err != nil {
+		return err, ""
+	}
+	//通过反射 获取某个字段的值
+	immutable := reflect.ValueOf(article)
+	val := immutable.FieldByName(field).String()
+	log.Println(val)
+	return nil, val
 }

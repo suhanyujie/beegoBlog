@@ -20,12 +20,14 @@ func (this *ArticleController) Get(){
 	}
 	var param []models.ConditionType
 	param = append(param, *condition)
-	err,data := models.GetRow(param)
+	err,title := models.GetOne(param,"Title")
 	if err!= nil {
 
 		this.TplName = "common/404.html"
 	}
-	this.Data["articleData"] = data
+	article := models.BlogArticles{}
+	article.Title = title
+	this.Data["articleData"] = article
 
 	this.TplName = "article/index.html"
 }
