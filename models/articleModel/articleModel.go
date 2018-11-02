@@ -1,4 +1,4 @@
-package models
+package articleModel
 
 import (
 	_ "github.com/go-sql-driver/mysql" // import your used driver
@@ -54,15 +54,15 @@ type BlogArticles struct {
 }
 
 type TestUser struct {
-	Id          int
-	Name        string
-	Profile     *TestProfile   `orm:"rel(one)"` // OneToOne relation
+	Id      int
+	Name    string
+	Profile *TestProfile `orm:"rel(one)"` // OneToOne relation
 }
 
 type TestProfile struct {
-	Id          int
-	Age         int16
-	User        *TestUser   `orm:"reverse(one)"` // 设置一对一反向关系(可选)
+	Id   int
+	Age  int16
+	User *TestUser `orm:"reverse(one)"` // 设置一对一反向关系(可选)
 }
 
 /**
@@ -110,7 +110,7 @@ func GetRow(param []ConditionType) (error, BlogArticles) {
 /**
 查询一条数据中的某个字段值
  */
-func GetOne(param []ConditionType,field string) (error, string) {
+func GetOne(param []ConditionType, field string) (error, string) {
 	o1 := orm.NewOrm()
 	qs := o1.QueryTable("blog_articles")
 	var article BlogArticles

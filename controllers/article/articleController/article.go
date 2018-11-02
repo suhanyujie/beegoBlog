@@ -3,25 +3,25 @@ package articleController
 import (
 	"github.com/astaxie/beego"
 	"html/template"
-	"beegoBlog/models"
+	models "beegoBlog/models/articleModel"
 )
 
 type ArticleController struct {
 	beego.Controller
 }
 
-func (this *ArticleController) Get(){
+func (this *ArticleController) Get() {
 	this.Data["xsrfField"] = template.HTML(this.XSRFFormHTML())
 	this.Data["xsrfToken"] = this.XSRFToken()
-	var condition  = &models.ConditionType{
-		Column:"id",
-		Operater:"=",
-		Value:"2",
+	var condition = &models.ConditionType{
+		Column:   "id",
+		Operater: "=",
+		Value:    "2",
 	}
 	var param []models.ConditionType
 	param = append(param, *condition)
-	err,title := models.GetOne(param,"Title")
-	if err!= nil {
+	err, title := models.GetOne(param, "Title")
+	if err != nil {
 
 		this.TplName = "common/404.html"
 	}
@@ -30,4 +30,8 @@ func (this *ArticleController) Get(){
 	this.Data["articleData"] = article
 
 	this.TplName = "article/index.html"
+}
+
+func (_this *ArticleController) Post() {
+
 }
