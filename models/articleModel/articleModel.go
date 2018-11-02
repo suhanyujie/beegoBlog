@@ -8,12 +8,22 @@ import (
 	"reflect"
 )
 
+//查询数据时的参数封装
+type QueryParam struct {
+	WhereParam []ConditionType
+	OrderParam string
+	GroupParam string
+	LimitParam string
+}
+
+//查询的where的条件参数
 type ConditionType struct {
 	Column   string
 	Operater string
 	Value    string
 }
 
+//数据包的初始化
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	err := orm.RegisterDataBase("default", "mysql", "root:root@mysql@tcp(45.118.254.107:3306)/laravel?charset=utf8", 30)
@@ -28,6 +38,7 @@ func init() {
 	}
 }
 
+//博客内容的结构体
 type BlogContent struct {
 	Id int `orm:"column(id);auto;pk;" description:"文章内容主键id"`
 	//ArticleId  int           `orm:"size(11)"`
@@ -37,7 +48,7 @@ type BlogContent struct {
 	Article   *BlogArticles `json:"id" orm:"rel(one)"`
 }
 
-// Model Struct
+// Model Struct //博客文章的结构体
 type BlogArticles struct {
 	Id             int          `orm:"column(id);auto;pk;" description:"文章主键id"`
 	ClassId        int          `orm:"column(class_id);size(11);default(0);comment(文章频道id)" description:"文章频道id"`
