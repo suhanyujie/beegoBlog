@@ -13,20 +13,13 @@ type ArticleController struct {
 func (this *ArticleController) Get() {
 	this.Data["xsrfField"] = template.HTML(this.XSRFFormHTML())
 	this.Data["xsrfToken"] = this.XSRFToken()
-	var condition = &models.ConditionType{
-		Column:   "id",
-		Operater: "=",
-		Value:    "2",
-	}
-	var param []models.ConditionType
-	param = append(param, *condition)
-	err, title := models.GetRow(param)
-	if err != nil {
-		this.TplName = "common/404.html"
-	}
+	filters := make([]interface{},0)
+	filters = append(filters,"is_del", 0)
+	articles,total := models.GetList(1,10,filters...)
 	article := models.BlogArticles{}
-	article.Title = title
-	this.Data["articleData"] = article
+	article.Title = "文章首页"
+	this.Data["Articles"] = articles
+	this.Data["Total"] = total
 
 	this.TplName = "article/index.html"
 }

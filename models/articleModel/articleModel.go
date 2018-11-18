@@ -98,24 +98,21 @@ func GetTest(param []ConditionType) (error, BlogArticles) {
 }
 
 /**
-查询一条数据
+查询数据
  */
-func GetRow(param []ConditionType) (error, BlogArticles) {
-	o1 := orm.NewOrm()
-	qs := o1.QueryTable("blog_articles")
-	var article BlogArticles
-	if len(param) < 1 {
-		return errors.New("查询条件为空！"), article
+func GetList(page,pageSize int,filters ...interface{}) ([]*BlogArticles,int64) {
+	offset := (page-1)*pageSize
+	list := make([]*BlogArticles,0)
+	query := orm.NewOrm().QueryTable("blog_articles")
+	if len(filters)>0 {
+		l := len(filters)
+		for k:=0;k<l;k+=2{
+			query = query.Filter((filters[k]).(string), filters[k+1])
+		}
 	}
-	for _, oneCondition := range param {
-		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
-	}
-	err := qs.RelatedSel().One(&article)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(article)
-	return nil, article
+	total,_ := query.Count()
+	query.OrderBy("-id").Limit(pageSize,offset).All(&list)
+	return list,total
 }
 
 /**
