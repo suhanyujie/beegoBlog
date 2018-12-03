@@ -6,6 +6,7 @@ import (
 	"log"
 	"errors"
 	"reflect"
+	"fmt"
 )
 
 //查询数据时的参数封装
@@ -42,26 +43,24 @@ func init() {
 type BlogContent struct {
 	Id int `orm:"column(id);auto;pk;" description:"文章内容主键id"`
 	//ArticleId  int           `orm:"size(11)"`
-	Content   string        `orm:"size(6000)"`
-	CreatedAt string        `orm:"size(20)"`
-	UpdatedAt string        `orm:"size(20)"`
-	Article   *BlogArticles `json:"id" orm:"rel(one)"`
+	Content   string `orm:"size(6000)"`
+	CreatedAt string `orm:"size(20)"`
+	UpdatedAt string `orm:"size(20)"`
 }
 
 // Model Struct //博客文章的结构体
 type BlogArticles struct {
-	Id             int          `orm:"column(id);auto;pk;" description:"文章主键id"`
-	ClassId        int          `orm:"column(class_id);size(11);default(0);comment(文章频道id)" description:"文章频道id"`
-	SubclassId     int          `orm:"column(subclass_id);size(11);default(0);comment(文章子频道id)"`
-	Title          string       `orm:"column(title);size(50);comment(文章标题)"`
-	Date           string       `orm:"column(date);size(20);comment(文章书写日期)"`
-	PublishDate    string       `orm:"column(publish_date);size(20);comment(文章发布日期)"`
-	PublishStatus  int          `orm:"column(publish_status);size(2);comment(文章状态)"`
-	IsDel          int          `orm:"column(is_del);size(2);default(0);comment(文章是否已删除)"`
-	CreatedAt      string       `orm:"column(created_at);size(20);comment(文章创建时间)"`
-	UserId         int          `orm:"column(user_id);size(11);default(0);comment(文章作者id)"`
-	Pv             int          `orm:"column(pv);size(11);default(0);comment(文章的pv统计)"`
-	ArticleContent *BlogContent `json:"article_id" orm:"reverse(one)"`
+	Id            int    `orm:"column(id);auto;pk;" description:"文章主键id"`
+	ClassId       int    `orm:"column(class_id);size(11);default(0);comment(文章频道id)" description:"文章频道id"`
+	SubclassId    int    `orm:"column(subclass_id);size(11);default(0);comment(文章子频道id)"`
+	Title         string `orm:"column(title);size(50);comment(文章标题)"`
+	Date          string `orm:"column(date);size(20);comment(文章书写日期)"`
+	PublishDate   string `orm:"column(publish_date);size(20);comment(文章发布日期)"`
+	PublishStatus int    `orm:"column(publish_status);size(2);comment(文章状态)"`
+	IsDel         int    `orm:"column(is_del);size(2);default(0);comment(文章是否已删除)"`
+	CreatedAt     string `orm:"column(created_at);size(20);comment(文章创建时间)"`
+	UserId        int    `orm:"column(user_id);size(11);default(0);comment(文章作者id)"`
+	Pv            int    `orm:"column(pv);size(11);default(0);comment(文章的pv统计)"`
 }
 
 type TestUser struct {
@@ -100,19 +99,36 @@ func GetTest(param []ConditionType) (error, BlogArticles) {
 /**
 查询数据
  */
-func GetList(page,pageSize int,filters ...interface{}) ([]*BlogArticles,int64) {
-	offset := (page-1)*pageSize
-	list := make([]*BlogArticles,0)
+func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64) {
+	offset := (page - 1) * pageSize
+	list := make([]*BlogArticles, 0)
 	query := orm.NewOrm().QueryTable("blog_articles")
-	if len(filters)>0 {
+	if len(filters) > 0 {
 		l := len(filters)
-		for k:=0;k<l;k+=2{
+		for k := 0; k < l; k += 2 {
 			query = query.Filter((filters[k]).(string), filters[k+1])
 		}
 	}
-	total,_ := query.Count()
-	query.OrderBy("-id").Limit(pageSize,offset).All(&list)
-	return list,total
+	total, _ := query.Count()
+	query.OrderBy("-id").Limit(pageSize, offset).All(&list)
+
+	//根据列表获取文章内容
+	if len(list)<1 {
+		return list, total
+	}
+	log.Println(list[0])
+	var ids []int
+	for _,article := range (list) {
+		log.Println(article)
+		ids = append(ids,article.Id)
+	}
+	//contentList := make([]*BlogContent,0)
+	//query := orm.NewOrm()
+	//sqlStr := "SELECT article_id,content from blog_content where article_id in (?,...)";
+	//query = query.Raw("BlogContent__ArticleId__in",ids)
+	//query.All(&contentList)
+	fmt.Println(ids)
+	return list, total
 }
 
 /**

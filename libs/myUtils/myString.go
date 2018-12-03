@@ -1,6 +1,12 @@
 package myUtils
 
+/*
+由于中文不是由一个字节组成，因此截取到半个中文时，就会出问题
 
+解决办法：
+先将其转为[]rune，再截取
+
+ */
 func ShowSubstr(s string, l int) string {
 	if len(s) <= l {
 		return s
