@@ -6,6 +6,7 @@ import (
 	"log"
 	"errors"
 	"reflect"
+	"github.com/astaxie/beego"
 )
 
 //查询数据时的参数封装
@@ -40,8 +41,8 @@ func init() {
 
 //博客内容的结构体
 type BlogContent struct {
-	Id int `orm:"column(id);auto;pk;" description:"文章内容主键id"`
-	//ArticleId  int           `orm:"size(11)"`
+	Id        int    `orm:"column(id);auto;pk;" description:"文章内容主键id"`
+	ArticleId int    `orm:"column(article_id);size(11)"`
 	Content   string `orm:"size(6000)"`
 	CreatedAt string `orm:"size(20)"`
 	UpdatedAt string `orm:"size(20)"`
@@ -104,6 +105,7 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	list := make([]*BlogArticles, 0)
 	o := orm.NewOrm()
 	query := o.QueryTable("blog_articles")
+
 	if len(filters) > 0 {
 		l := len(filters)
 		for k := 0; k < l; k += 2 {
@@ -120,9 +122,9 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	//log.Println(list[0])
 	var ids []int
 	for _,article := range (list) {
-		//log.Println(article)
 		ids = append(ids,article.Id)
 	}
+
 	//query = o.QueryTable("blog_content")
 	//sql := `select content,article_id from blog_content\
 	//	where article_id in ()
@@ -134,16 +136,19 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	//	log.Println(err)
 	//}
 	//fmt.Println(res)
-	log.Println(ids)
+	//log.Println(ids)
 
 	contentList := make([]*BlogContent,0)
+	var contentMapData = make(map[int](*BlogContent),0);
 	query = o.QueryTable("blog_content")
-	//sqlStr := "SELECT article_id,content from blog_content where article_id in (?,...)";
-	query = query.Filter("laravel__article_id__in",[]int{1,2,3,4,5,6,7})
+	query = query.Filter("article_id__in",ids)
 	query.All(&contentList)
-	//for _, article := range contentList {
-	//	log.Println(article)
-	//}
+	for _, oneContent := range contentList {
+		contentMapData[oneContent.ArticleId] = oneContent
+	}
+	for i,article := range (list) {
+		list[i].Content = beego.Substr(contentMapData[article.Id].Content,0,120)
+	}
 
 	return list, total
 }

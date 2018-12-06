@@ -60,7 +60,7 @@
                     <h3><a href="details.html">{{$article.Title}}</a></h3>
                     <h5>发布于：<span>{{$article.CreatedAt}}</span></h5>
                     <p>
-
+{{ str2html $article.Content }}
                     </p>
                 </div>
                 <div class="comment count">
