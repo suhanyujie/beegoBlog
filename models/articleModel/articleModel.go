@@ -6,7 +6,6 @@ import (
 	"log"
 	"errors"
 	"reflect"
-	"fmt"
 )
 
 //查询数据时的参数封装
@@ -61,6 +60,7 @@ type BlogArticles struct {
 	CreatedAt     string `orm:"column(created_at);size(20);comment(文章创建时间)"`
 	UserId        int    `orm:"column(user_id);size(11);default(0);comment(文章作者id)"`
 	Pv            int    `orm:"column(pv);size(11);default(0);comment(文章的pv统计)"`
+	Content string
 }
 
 type TestUser struct {
@@ -102,7 +102,8 @@ func GetTest(param []ConditionType) (error, BlogArticles) {
 func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64) {
 	offset := (page - 1) * pageSize
 	list := make([]*BlogArticles, 0)
-	query := orm.NewOrm().QueryTable("blog_articles")
+	o := orm.NewOrm()
+	query := o.QueryTable("blog_articles")
 	if len(filters) > 0 {
 		l := len(filters)
 		for k := 0; k < l; k += 2 {
@@ -116,18 +117,34 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	if len(list)<1 {
 		return list, total
 	}
-	log.Println(list[0])
+	//log.Println(list[0])
 	var ids []int
 	for _,article := range (list) {
-		log.Println(article)
+		//log.Println(article)
 		ids = append(ids,article.Id)
 	}
-	//contentList := make([]*BlogContent,0)
-	//query := orm.NewOrm()
+	//query = o.QueryTable("blog_content")
+	//sql := `select content,article_id from blog_content\
+	//	where article_id in ()
+	//	`;
+	//var r orm.RawSeter
+	//r = o.Raw(sql);
+	//res,err := r.Exec();
+	//if err!=nil {
+	//	log.Println(err)
+	//}
+	//fmt.Println(res)
+	log.Println(ids)
+
+	contentList := make([]*BlogContent,0)
+	query = o.QueryTable("blog_content")
 	//sqlStr := "SELECT article_id,content from blog_content where article_id in (?,...)";
-	//query = query.Raw("BlogContent__ArticleId__in",ids)
-	//query.All(&contentList)
-	fmt.Println(ids)
+	query = query.Filter("laravel__article_id__in",[]int{1,2,3,4,5,6,7})
+	query.All(&contentList)
+	//for _, article := range contentList {
+	//	log.Println(article)
+	//}
+
 	return list, total
 }
 
