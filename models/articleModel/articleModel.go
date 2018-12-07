@@ -97,6 +97,12 @@ func GetTest(param []ConditionType) (error, BlogArticles) {
 	return nil, article
 }
 
+//新增数据
+func Add(data *BlogArticles) (bool,error) {
+
+	return true,nil
+}
+
 /**
 查询数据
  */

@@ -24,7 +24,13 @@ func (this *ArticleController) Get() {
 	this.TplName = "article/index.html"
 }
 
+//新增文章
 func (_this *ArticleController) Post() {
+
+}
+
+//展示一个文章
+func (_this *ArticleController) Show() {
 
 }
 
