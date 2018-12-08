@@ -4,6 +4,8 @@ import (
 	"github.com/astaxie/beego"
 	"html/template"
 	models "beegoBlog/models/articleModel"
+	"time"
+	"strconv"
 )
 
 type ArticleController struct {
@@ -26,7 +28,33 @@ func (this *ArticleController) Get() {
 
 //新增文章
 func (_this *ArticleController) Post() {
+	var (
+		newId int64
+		error error
+		responseMap map[string]string
+		currentTime string
+	)
+	currentTime = time.Now().Format("2006-01-02 15:04:05")
+	post := _this.Input()
+	newArticle := &models.BlogArticles{
+		Title:post.Get("title"),
+		Content:post.Get("content"),
+		Date:time.Now().Unix(),
+		PublishDate:0,
+		CreatedAt:currentTime,
+		UserId:1,
+	}
+	newId,error = models.Add(newArticle);
+	if error!=nil {
+		responseMap["error"] = error.Error()
+	}
+	responseMap = map[string]string{
+		"name":"suhanyu",
+		"newId":strconv.FormatInt(newId,10),
+	}
+	_this.Data["json"] = responseMap
 
+	_this.ServeJSON()
 }
 
 //展示一个文章

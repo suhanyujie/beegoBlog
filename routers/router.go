@@ -10,4 +10,5 @@ func init() {
     //访问根路径也是访问文章首页
     beego.Router("/", &articleController.ArticleController{})
     beego.Router("/article", &articleController.ArticleController{})
+    beego.Router("/article", &articleController.ArticleController{},"post:Post")
 }

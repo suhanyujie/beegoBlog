@@ -31,7 +31,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	orm.RegisterModel(new(BlogArticles), new(BlogContent))
+	orm.RegisterModel(new(BlogArticlesCopy1), new(BlogContent))
 	orm.RegisterModel(new(TestUser), new(TestProfile))
 	err = orm.RunSyncdb("default", false, true)
 	if err != nil {
@@ -49,20 +49,23 @@ type BlogContent struct {
 }
 
 // Model Struct //博客文章的结构体
-type BlogArticles struct {
+type BlogArticlesCopy1 struct {
 	Id            int    `orm:"column(id);auto;pk;" description:"文章主键id"`
 	ClassId       int    `orm:"column(class_id);size(11);default(0);comment(文章频道id)" description:"文章频道id"`
 	SubclassId    int    `orm:"column(subclass_id);size(11);default(0);comment(文章子频道id)"`
 	Title         string `orm:"column(title);size(50);comment(文章标题)"`
-	Date          string `orm:"column(date);size(20);comment(文章书写日期)"`
-	PublishDate   string `orm:"column(publish_date);size(20);comment(文章发布日期)"`
+	Date          int64  `orm:"column(date);size(20);comment(文章书写日期)"`
+	PublishDate   int64  `orm:"column(publish_date);size(20);comment(文章发布日期)"`
 	PublishStatus int    `orm:"column(publish_status);size(2);comment(文章状态)"`
 	IsDel         int    `orm:"column(is_del);size(2);default(0);comment(文章是否已删除)"`
 	CreatedAt     string `orm:"column(created_at);size(20);comment(文章创建时间)"`
 	UserId        int    `orm:"column(user_id);size(11);default(0);comment(文章作者id)"`
 	Pv            int    `orm:"column(pv);size(11);default(0);comment(文章的pv统计)"`
-	Content string
+	Content       string
 }
+
+//取别名
+type BlogArticles = BlogArticlesCopy1
 
 type TestUser struct {
 	Id      int
@@ -98,9 +101,15 @@ func GetTest(param []ConditionType) (error, BlogArticles) {
 }
 
 //新增数据
-func Add(data *BlogArticles) (bool,error) {
+func Add(data *BlogArticles) (int64, error) {
+	o := orm.NewOrm()
+	insertId, err := o.Insert(data)
+	if err != nil {
+		log.Println(err)
+		return 0, err
+	}
 
-	return true,nil
+	return insertId, nil
 }
 
 /**
@@ -122,13 +131,13 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	query.OrderBy("-id").Limit(pageSize, offset).All(&list)
 
 	//根据列表获取文章内容
-	if len(list)<1 {
+	if len(list) < 1 {
 		return list, total
 	}
 	//log.Println(list[0])
 	var ids []int
-	for _,article := range (list) {
-		ids = append(ids,article.Id)
+	for _, article := range (list) {
+		ids = append(ids, article.Id)
 	}
 
 	//query = o.QueryTable("blog_content")
@@ -144,16 +153,25 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	//fmt.Println(res)
 	//log.Println(ids)
 
-	contentList := make([]*BlogContent,0)
-	var contentMapData = make(map[int](*BlogContent),0);
+	contentList := make([]*BlogContent, 0)
+	var contentMapData = make(map[int](*BlogContent), 0);
 	query = o.QueryTable("blog_content")
-	query = query.Filter("article_id__in",ids)
+	query = query.Filter("article_id__in", ids)
 	query.All(&contentList)
 	for _, oneContent := range contentList {
 		contentMapData[oneContent.ArticleId] = oneContent
 	}
-	for i,article := range (list) {
-		list[i].Content = beego.Substr(contentMapData[article.Id].Content,0,120)
+	var tmpContent string
+	for i, article := range (list) {
+		if contentMapData[article.Id] == nil {
+			continue
+		}
+		tmpContent = contentMapData[article.Id].Content
+		if tmpContent != "" {
+			list[i].Content = beego.Substr(contentMapData[article.Id].Content, 0, 120)
+		} else {
+			list[i].Content = ""
+		}
 	}
 
 	return list, total
