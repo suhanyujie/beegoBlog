@@ -98,6 +98,9 @@ func Add(data *BlogArticles) (int64, error) {
  */
 func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64) {
 	offset := (page - 1) * pageSize
+	if offset<0 {
+		offset = 0
+	}
 	list := make([]*BlogArticles, 0)
 	o := orm.NewOrm()
 	query := o.QueryTable(articleTable)
@@ -120,20 +123,6 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	for _, article := range (list) {
 		ids = append(ids, article.Id)
 	}
-
-	//query = o.QueryTable("blog_content")
-	//sql := `select content,article_id from blog_content\
-	//	where article_id in ()
-	//	`;
-	//var r orm.RawSeter
-	//r = o.Raw(sql);
-	//res,err := r.Exec();
-	//if err!=nil {
-	//	log.Println(err)
-	//}
-	//fmt.Println(res)
-	//log.Println(ids)
-
 	contentList := make([]*BlogContent, 0)
 	var contentMapData = make(map[int](*BlogContent), 0);
 	query = o.QueryTable("blog_content")
