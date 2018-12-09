@@ -16,6 +16,9 @@
 * 时间字符串的写法：`time.Now().Format("2006-01-02 15:04:05")`
 * 时间戳的写法：`time.Now().Unix()`
 
+### 2.分页的示例如下：
+* https://beego.me/docs/mvc/view/page.md
+
 ## 踩坑全书
 ### 1.beego orm的in查询
 * 在beego orm文档中 https://beego.me/docs/mvc/model/query.md

@@ -6,6 +6,7 @@ import (
 	models "beegoBlog/models/articleModel"
 	"time"
 	"strconv"
+	"beegoBlog/libs/myUtils"
 )
 
 type ArticleController struct {
@@ -13,15 +14,38 @@ type ArticleController struct {
 }
 
 func (this *ArticleController) Get() {
+	var (
+		totalPage int64;
+		pageSize int64 = 10;
+		nextPage int64;
+		page     int64 = 1;
+	)
+	p := this.Input().Get("p")
+	page,_ = strconv.ParseInt(p,10,10)
 	this.Data["xsrfField"] = template.HTML(this.XSRFFormHTML())
 	this.Data["xsrfToken"] = this.XSRFToken()
-	filters := make([]interface{},0)
-	filters = append(filters,"is_del", 0)
-	articles,total := models.GetList(1,10,filters...)
+	filters := make([]interface{}, 0)
+	filters = append(filters, "is_del", 0)
+	articles, total := models.GetList(int(page), int(pageSize), filters...)
+	//filters = append(filters,"is_count",1)
 	article := models.BlogArticles{}
 	article.Title = "文章首页"
 	this.Data["Articles"] = articles
 	this.Data["Total"] = total
+	this.Data["page"] = page
+	this.Data["pageSize"] = pageSize
+	totalPage = total / pageSize
+	if total % pageSize > 0 {
+		totalPage++
+	}
+	nextPage = page + 1
+	if nextPage >= totalPage {
+		nextPage = totalPage
+	}
+	this.Data["nextPage"] = nextPage
+	pagi := myUtils.NewPaginator(this.Ctx.Request, int(pageSize), total)
+	this.Data["paginator"] = pagi
+	this.Data["Lang"] = "zh-CN"
 
 	this.TplName = "article/index.html"
 }
@@ -29,28 +53,28 @@ func (this *ArticleController) Get() {
 //新增文章
 func (_this *ArticleController) Post() {
 	var (
-		newId int64
-		error error
+		newId       int64
+		error       error
 		responseMap map[string]string
 		currentTime string
 	)
 	currentTime = time.Now().Format("2006-01-02 15:04:05")
 	post := _this.Input()
 	newArticle := &models.BlogArticles{
-		Title:post.Get("title"),
-		Content:post.Get("content"),
-		Date:time.Now().Unix(),
-		PublishDate:0,
-		CreatedAt:currentTime,
-		UserId:1,
+		Title:       post.Get("title"),
+		Content:     post.Get("content"),
+		Date:        time.Now().Unix(),
+		PublishDate: 0,
+		CreatedAt:   currentTime,
+		UserId:      1,
 	}
-	newId,error = models.Add(newArticle);
-	if error!=nil {
+	newId, error = models.Add(newArticle);
+	if error != nil {
 		responseMap["error"] = error.Error()
 	}
 	responseMap = map[string]string{
-		"name":"suhanyu",
-		"newId":strconv.FormatInt(newId,10),
+		"name":  "suhanyu",
+		"newId": strconv.FormatInt(newId, 10),
 	}
 	_this.Data["json"] = responseMap
 

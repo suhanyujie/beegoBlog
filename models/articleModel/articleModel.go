@@ -24,6 +24,8 @@ type ConditionType struct {
 	Value    string
 }
 
+const articleTable = "blog_articles_copy1"
+
 //数据包的初始化
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
@@ -79,27 +81,6 @@ type TestProfile struct {
 	User *TestUser `orm:"reverse(one)"` // 设置一对一反向关系(可选)
 }
 
-/**
-测试 测试
- */
-func GetTest(param []ConditionType) (error, BlogArticles) {
-	o1 := orm.NewOrm()
-	qs := o1.QueryTable("test_user")
-	var article BlogArticles
-	if len(param) < 1 {
-		return errors.New("查询条件为空！"), article
-	}
-	for _, oneCondition := range param {
-		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
-	}
-	err := qs.RelatedSel().One(&article)
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println(article)
-	return nil, article
-}
-
 //新增数据
 func Add(data *BlogArticles) (int64, error) {
 	o := orm.NewOrm()
@@ -119,7 +100,7 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	offset := (page - 1) * pageSize
 	list := make([]*BlogArticles, 0)
 	o := orm.NewOrm()
-	query := o.QueryTable("blog_articles")
+	query := o.QueryTable(articleTable)
 
 	if len(filters) > 0 {
 		l := len(filters)
@@ -182,7 +163,7 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
  */
 func GetOne(param []ConditionType, field string) (error, string) {
 	o1 := orm.NewOrm()
-	qs := o1.QueryTable("blog_articles")
+	qs := o1.QueryTable(articleTable)
 	var article BlogArticles
 	if len(param) < 1 {
 		return errors.New("查询条件为空！"), ""
@@ -202,4 +183,25 @@ func GetOne(param []ConditionType, field string) (error, string) {
 	val := immutable.FieldByName(field).String()
 	log.Println(val)
 	return nil, val
+}
+
+/**
+测试 测试
+ */
+func GetTest(param []ConditionType) (error, BlogArticles) {
+	o1 := orm.NewOrm()
+	qs := o1.QueryTable("test_user")
+	var article BlogArticles
+	if len(param) < 1 {
+		return errors.New("查询条件为空！"), article
+	}
+	for _, oneCondition := range param {
+		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
+	}
+	err := qs.RelatedSel().One(&article)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println(article)
+	return nil, article
 }
