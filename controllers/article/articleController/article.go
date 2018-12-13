@@ -7,6 +7,7 @@ import (
 	"time"
 	"strconv"
 	"beegoBlog/libs/myUtils"
+	"fmt"
 )
 
 type ArticleController struct {
@@ -50,6 +51,26 @@ func (this *ArticleController) Get() {
 	this.TplName = "article/index.html"
 }
 
+//展示一个文章
+func (_this *ArticleController) Show() {
+	articleId := _this.Ctx.Input.Param(":id")
+	condi := &models.ConditionType{
+		"id",
+		"=",
+		articleId,
+	}
+	var condiArr []models.ConditionType
+	condiArr = append(condiArr, *condi)
+	err,article := models.GetRaw(condiArr)
+	if err!=nil {
+		fmt.Println(err)
+	}
+	_this.Data["article"] = article
+	//time.Now().Format("2006-01-02 15:04:05")
+	_this.Data["year"] = time.Now().Format("2006")
+	_this.TplName = "article/details.html"
+}
+
 //新增文章
 func (_this *ArticleController) Post() {
 	var (
@@ -79,11 +100,6 @@ func (_this *ArticleController) Post() {
 	_this.Data["json"] = responseMap
 
 	_this.ServeJSON()
-}
-
-//展示一个文章
-func (_this *ArticleController) Show() {
-
 }
 
 func (this *ArticleController) GetOneColumn() {

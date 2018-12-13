@@ -147,6 +147,33 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	return list, total
 }
 
+func GetRaw(param []ConditionType) (error, BlogArticles) {
+	o := orm.NewOrm()
+	qs := o.QueryTable(articleTable)
+	//article := new(BlogArticles)
+	var article BlogArticles
+	if len(param) < 1 {
+		return errors.New("查询条件为空！"), article
+	}
+	for _, oneCondition := range param {
+		qs = qs.Filter(oneCondition.Column, oneCondition.Value)
+	}
+	err := qs.One(&article)
+	if err == orm.ErrNoRows {
+		return err, article
+	}
+	if err != nil {
+		return err, article
+	}
+	contentObj := &BlogContent{}
+	qs = o.QueryTable("blog_content")
+	qs = qs.Filter("article_id", article.Id)
+	qs.One(contentObj)
+	article.Content = contentObj.Content
+
+	return nil, article
+}
+
 /**
 查询一条数据中的某个字段值
  */

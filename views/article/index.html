@@ -57,7 +57,7 @@
             {{range $index, $article := .Articles }}
             <div class="item">
                 <div class="item-box  layer-photos-demo2 layer-photos-demo">
-                    <h3><a href="details.html">{{$article.Title}}</a></h3>
+                    <h3><a href="/article/detail/{{$article.Id}}">{{$article.Title}}</a></h3>
                     <h5>发布于：<span>{{$article.CreatedAt}}</span></h5>
                     <p>
 {{ str2html $article.Content }}
