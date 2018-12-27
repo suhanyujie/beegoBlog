@@ -15,6 +15,7 @@
 ### 1.时间和时间戳
 * 时间字符串的写法：`time.Now().Format("2006-01-02 15:04:05")`
 * 时间戳的写法：`time.Now().Unix()`
+* markdown解释器使用`russross/blackfriday`
 
 ### 2.分页的示例如下：
 * https://beego.me/docs/mvc/view/page.md

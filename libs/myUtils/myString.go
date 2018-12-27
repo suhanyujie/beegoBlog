@@ -1,5 +1,9 @@
 package myUtils
 
+import (
+	"gopkg.in/russross/blackfriday.v2"
+)
+
 /*
 由于中文不是由一个字节组成，因此截取到半个中文时，就会出问题
 
@@ -27,4 +31,11 @@ func ShowSubstr(s string, l int) string {
 		ss += string(r)
 	}
 	return ss
+}
+
+func MarkdownToHtml(content string)(returnContent string) {
+	byteContent := []byte(content)
+	output := blackfriday.Run(byteContent)
+	returnContent = string(output);
+	return;
 }

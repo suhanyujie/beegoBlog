@@ -6,6 +6,8 @@ import (
 	"github.com/beego/i18n"
 )
 
+const TIME_FORMAT_STRING = "2006-01-02 15:04:05"
+
 func main() {
 	blogInit()
 	beego.Run()

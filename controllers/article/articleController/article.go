@@ -65,7 +65,11 @@ func (_this *ArticleController) Show() {
 	if err!=nil {
 		fmt.Println(err)
 	}
+	if article.Content != "" {
+		article.Content = myUtils.MarkdownToHtml(article.Content)
+	}
 	_this.Data["article"] = article
+	_this.Data["articlePublishTime"] = time.Unix(article.PublishDate, 0).Format("2006-01-02 15:04:05")
 	//time.Now().Format("2006-01-02 15:04:05")
 	_this.Data["year"] = time.Now().Format("2006")
 	_this.TplName = "article/details.html"
