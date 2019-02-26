@@ -15,10 +15,9 @@ func main() {
 
 func blogInit() {
 	//增加静态文件访问的支持
-	beego.SetStaticPath("/layui","views/layui")
-	beego.SetStaticPath("/static","views/static")
+	beego.SetStaticPath("/layui", "views/layui")
+	beego.SetStaticPath("/static", "views/static")
 	//增加html后缀的模板支持
 	beego.AddTemplateExt("html")
 	beego.AddFuncMap("i18n", i18n.Tr)
 }
-

@@ -1,12 +1,12 @@
 package articleModel
 
 import (
-	_ "github.com/go-sql-driver/mysql" // import your used driver
-	"github.com/astaxie/beego/orm"
-	"log"
 	"errors"
-	"reflect"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	_ "github.com/go-sql-driver/mysql" // import your used driver
+	"log"
+	"reflect"
 )
 
 //查询数据时的参数封装
@@ -29,7 +29,8 @@ const articleTable = "blog_articles_copy1"
 //数据包的初始化
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	err := orm.RegisterDataBase("default", "mysql", "root:root@mysql@tcp(45.118.254.107:3306)/laravel?charset=utf8", 30)
+	// root@mysql
+	err := orm.RegisterDataBase("default", "mysql", "root:123456@tcp(localhost:3306)/laravel?charset=utf8", 30)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,10 +96,10 @@ func Add(data *BlogArticles) (int64, error) {
 
 /**
 查询数据
- */
+*/
 func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64) {
 	offset := (page - 1) * pageSize
-	if offset<0 {
+	if offset < 0 {
 		offset = 0
 	}
 	list := make([]*BlogArticles, 0)
@@ -120,11 +121,11 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 	}
 	//log.Println(list[0])
 	var ids []int
-	for _, article := range (list) {
+	for _, article := range list {
 		ids = append(ids, article.Id)
 	}
 	contentList := make([]*BlogContent, 0)
-	var contentMapData = make(map[int](*BlogContent), 0);
+	var contentMapData = make(map[int](*BlogContent), 0)
 	query = o.QueryTable("blog_content")
 	query = query.Filter("article_id__in", ids)
 	query.All(&contentList)
@@ -132,7 +133,7 @@ func GetList(page, pageSize int, filters ...interface{}) ([]*BlogArticles, int64
 		contentMapData[oneContent.ArticleId] = oneContent
 	}
 	var tmpContent string
-	for i, article := range (list) {
+	for i, article := range list {
 		if contentMapData[article.Id] == nil {
 			continue
 		}
@@ -176,7 +177,7 @@ func GetRaw(param []ConditionType) (error, BlogArticles) {
 
 /**
 查询一条数据中的某个字段值
- */
+*/
 func GetOne(param []ConditionType, field string) (error, string) {
 	o1 := orm.NewOrm()
 	qs := o1.QueryTable(articleTable)
@@ -201,9 +202,24 @@ func GetOne(param []ConditionType, field string) (error, string) {
 	return nil, val
 }
 
+func InsertArticle(articleObj BlogArticlesCopy1, contentObj BlogContent, other map[string]string) (int64, error) {
+	o1 := orm.NewOrm()
+	id, err := o1.Insert(articleObj)
+	if err != nil {
+		return 0, err
+	}
+	//查看文章是否已存在
+	contentObj.ArticleId = int(id)
+	_, err = o1.Insert(contentObj)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
+
 /**
 测试 测试
- */
+*/
 func GetTest(param []ConditionType) (error, BlogArticles) {
 	o1 := orm.NewOrm()
 	qs := o1.QueryTable("test_user")
