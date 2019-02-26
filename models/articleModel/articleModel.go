@@ -202,7 +202,7 @@ func GetOne(param []ConditionType, field string) (error, string) {
 	return nil, val
 }
 
-func InsertArticle(articleObj BlogArticlesCopy1, contentObj BlogContent, other map[string]string) (int64, error) {
+func InsertArticle(articleObj *BlogArticlesCopy1, contentObj *BlogContent, other map[string]string) (int64, error) {
 	o1 := orm.NewOrm()
 	id, err := o1.Insert(articleObj)
 	if err != nil {
