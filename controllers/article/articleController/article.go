@@ -1,13 +1,13 @@
 package articleController
 
 import (
+	"beegoBlog/libs/myUtils"
+	models "beegoBlog/models/articleModel"
+	"fmt"
 	"github.com/astaxie/beego"
 	"html/template"
-	models "beegoBlog/models/articleModel"
-	"time"
 	"strconv"
-	"beegoBlog/libs/myUtils"
-	"fmt"
+	"time"
 )
 
 type ArticleController struct {
@@ -16,13 +16,13 @@ type ArticleController struct {
 
 func (this *ArticleController) Get() {
 	var (
-		totalPage int64;
-		pageSize int64 = 10;
-		nextPage int64;
-		page     int64 = 1;
+		totalPage int64
+		pageSize  int64 = 10
+		nextPage  int64
+		page      int64 = 1
 	)
 	p := this.Input().Get("p")
-	page,_ = strconv.ParseInt(p,10,10)
+	page, _ = strconv.ParseInt(p, 10, 10)
 	this.Data["xsrfField"] = template.HTML(this.XSRFFormHTML())
 	this.Data["xsrfToken"] = this.XSRFToken()
 	filters := make([]interface{}, 0)
@@ -36,7 +36,7 @@ func (this *ArticleController) Get() {
 	this.Data["page"] = page
 	this.Data["pageSize"] = pageSize
 	totalPage = total / pageSize
-	if total % pageSize > 0 {
+	if total%pageSize > 0 {
 		totalPage++
 	}
 	nextPage = page + 1
@@ -61,13 +61,13 @@ func (_this *ArticleController) Show() {
 	}
 	var condiArr []models.ConditionType
 	condiArr = append(condiArr, *condi)
-	err,article := models.GetRaw(condiArr)
-	if err!=nil {
+	err, article := models.GetRaw(condiArr)
+	if err != nil {
 		fmt.Println(err)
 	}
-	if article.Content != "" {
-		article.Content = myUtils.MarkdownToHtml(article.Content)
-	}
+	//if article.Content != "" {
+	//	//	article.Content = myUtils.MarkdownToHtml(article.Content)
+	//	//}
 	_this.Data["article"] = article
 	_this.Data["articlePublishTime"] = time.Unix(article.PublishDate, 0).Format("2006-01-02 15:04:05")
 	//time.Now().Format("2006-01-02 15:04:05")
@@ -93,7 +93,7 @@ func (_this *ArticleController) Post() {
 		CreatedAt:   currentTime,
 		UserId:      1,
 	}
-	newId, error = models.Add(newArticle);
+	newId, error = models.Add(newArticle)
 	if error != nil {
 		responseMap["error"] = error.Error()
 	}

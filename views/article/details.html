@@ -2,18 +2,34 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>评论-闲言轻博客</title>
+	<title>{{.article.Title}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="/layui/css/layui.css">
-	<link rel="stylesheet" href="/static/css/mian.css">
+	<link rel="stylesheet" href="/vstatic/css/main.css">
+	<link rel="stylesheet" href="/static/plugin/editormd/css/editormd.min.css" />
+	<style>
+		.article-content,#main{ max-width: 58em;margin:0 auto; font-size: 17px;color: #3d464d;line-height: 30px;
+			font-family: "Microsoft YaHei",STHeiti,"WenQuanYi Micro Hei",SimSun,sans-serif;
+			border-bottom: 2px solid #ccc;
+		}
+		.lay-blog .container {
+			width: 980px;
+			margin: 0 auto;
+		}
+		.markdown-body h1{
+			font-size: 26px;}
+		.markdown-body h2{font-size: 24px;}.markdown-body h3{font-size: 22px;}
+		.markdown-body h4{font-size: 20px;}.markdown-body h5{font-size: 18px;}
+		.markdown-body h6{font-size: 16px;}
+	</style>
 </head>
 <body class="lay-blog">
 		<div class="header">
 			<div class="header-wrap">
 				<h1 class="logo pull-left">
 					<a href="index.html">
-						<img src="/static/images/logo.png" alt="" class="logo-img">
-						<img src="/static/images/logo-text.png" alt="" class="logo-text">
+						<img src="/vstatic/images/logo.png" alt="" class="logo-img">
+						<img src="/vstatic/images/logo-text.png" alt="" class="logo-text">
 					</a>
 				</h1>
 				<form class="layui-form blog-seach pull-left" action="">
@@ -53,10 +69,14 @@
 						<div class="item-box  layer-photos-demo1 layer-photos-demo">
 							<h3><a href="details.html">{{.article.Title}}</a></h3>
 							<h5>发布于：<span>{{ .articlePublishTime }}</span></h5>
-							<p>
-							{{ str2html .article.Content }}
-							</p>
-							<img src="/static/images/item.png" alt="" style="display: none;">
+							<article id="main">
+								<div class="content" style="display:none;">
+									<textarea id="main-content">{{ str2html .article.Content }}</textarea>
+								</div>
+							</article>
+
+
+							<img src="/vstatic/images/item.png" alt="" style="display: none;">
 							<div class="count layui-clear">
 								<span class="pull-left">阅读 <em>100000+</em></span>
 								<span class="pull-right like"><i class="layui-icon layui-icon-praise"></i><em>999</em></span>
@@ -70,13 +90,13 @@
 					</div>
 					<div id="LAY-msg-box">
 						<div class="info-item">
-							<img class="info-img" src="/static/images/info-img.png" alt="" >
+							<img class="info-img" src="/vstatic/images/info-img.png" alt="" >
 							<div class="info-text">
-								<p class="title count">
-									<span class="name">一片空白</span>
-									<span class="info-img like"><i class="layui-icon layui-icon-praise"></i>5.8万</span>
+								<p clayer-photos-demolass="title count">
+									<span class="name">佚名</span>
+									<span class="info-img like"><i class="layui-icon layui-icon-praise"></i>0</span>
 								</p>
-								<p class="info-intr">父爱如山，不善表达。回想十多年前，总记得父亲有个宽厚的肩膀，小小的自己跨坐在上面，越过人山人海去看更广阔的天空，那个时候期望自己有一双翅膀，能够像鸟儿一样飞得高，看得远。虽然父亲有时会和自己开玩笑，但在做错事的时候会受到严厉的训斥。父亲有双粗糙的大手掌。</p>
+								<p class="info-intr">暂无</p>
 							</div>
 						</div>
 					</div>
@@ -91,13 +111,38 @@
 			</p>
 			<p><span>人生就是一场修行</span></p>
 		</div>
-	<script src="/layui/layui.js">
+	<script src="/layui/layui.js"></script>
+	<script src="/static/plugin/editormd/js/jquery.min.js"></script>
+	<script src="/static/plugin/editormd/lib/marked.min.js"></script>
+	<script src="/static/plugin/editormd/lib/prettify.min.js"></script>
+	<script src="/static/plugin/editormd/lib/raphael.min.js"></script>
+	<script src="/static/plugin/editormd/lib/underscore.min.js"></script>
+	<script src="/static/plugin/editormd/lib/sequence-diagram.min.js"></script>
+	<script src="/static/plugin/editormd/lib/flowchart.min.js"></script>
+	<script src="/static/plugin/editormd/lib/jquery.flowchart.min.js"></script>
+	<script src="/static/plugin/editormd/editormd.js"></script>
 
-	</script>
 	<script>
 		layui.config({
-		  base: '/static/js/' 
+		  base: '/vstatic/js/'
 		}).use('blog');
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			// markdown内容的显示
+			var testEditormdView;
+			testEditormdView = editormd.markdownToHTML("main", {
+//            markdown        : $('#main-content').html(),// + $("#append-test").text(),
+				htmlDecode: "style,script,iframe",  // you can filter tags decode
+				emoji: true,
+				taskList: true,
+				tex: true,  // 默认不解析
+				flowChart: true,  // 默认不解析
+				sequenceDiagram: true,  // 默认不解析
+				codeFold: true
+			});
+
+		});
 	</script>
 </body>
 </html>

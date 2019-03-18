@@ -30,7 +30,7 @@ const articleTable = "blog_articles_copy1"
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	// root@mysql
-	err := orm.RegisterDataBase("default", "mysql", "root:123456@tcp(localhost:3306)/laravel?charset=utf8", 30)
+	err := orm.RegisterDataBase("default", "mysql", "root:123456@tcp(192.168.214.128:3306)/laravel?charset=utf8", 30)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +52,7 @@ type BlogContent struct {
 }
 
 // Model Struct //博客文章的结构体
-type BlogArticlesCopy1 struct {
+type BlogArticles struct {
 	Id            int    `orm:"column(id);auto;pk;" description:"文章主键id"`
 	ClassId       int    `orm:"column(class_id);size(11);default(0);comment(文章频道id)" description:"文章频道id"`
 	SubclassId    int    `orm:"column(subclass_id);size(11);default(0);comment(文章子频道id)"`
@@ -68,7 +68,7 @@ type BlogArticlesCopy1 struct {
 }
 
 //取别名
-type BlogArticles = BlogArticlesCopy1
+type BlogArticlesCopy1 = BlogArticles
 
 type TestUser struct {
 	Id      int
