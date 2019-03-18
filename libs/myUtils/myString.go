@@ -1,16 +1,12 @@
 package myUtils
 
-import (
-	"gopkg.in/russross/blackfriday.v2"
-)
-
 /*
 由于中文不是由一个字节组成，因此截取到半个中文时，就会出问题
 
 解决办法：
 先将其转为[]rune，再截取
 
- */
+*/
 func ShowSubstr(s string, l int) string {
 	if len(s) <= l {
 		return s
@@ -24,18 +20,11 @@ func ShowSubstr(s string, l int) string {
 			rl = 2
 		}
 
-		if sl + rl > l {
+		if sl+rl > l {
 			break
 		}
 		sl += rl
 		ss += string(r)
 	}
 	return ss
-}
-
-func MarkdownToHtml(content string)(returnContent string) {
-	byteContent := []byte(content)
-	output := blackfriday.Run(byteContent)
-	returnContent = string(output);
-	return;
 }
