@@ -2,6 +2,7 @@ package articleModel
 
 import (
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql" // import your used driver
@@ -29,8 +30,14 @@ const articleTable = "blog_articles_copy1"
 //数据包的初始化
 func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
+	host := beego.AppConfig.String("db::host")
+	user := beego.AppConfig.String("db::user")
+	passwd := beego.AppConfig.String("db::passwd")
+	port := beego.AppConfig.String("db::port")
+	database := beego.AppConfig.String("db::database")
+	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", user, passwd, host, port, database)
 	// root@mysql
-	err := orm.RegisterDataBase("default", "mysql", "root:123456@tcp(192.168.214.128:3306)/laravel?charset=utf8", 30)
+	err := orm.RegisterDataBase("default", "mysql", dataSource, 30)
 	if err != nil {
 		log.Fatal(err)
 	}

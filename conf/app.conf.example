@@ -1,0 +1,15 @@
+appname = beegoBlog
+httpport = 8080
+runmode = dev
+
+[db]
+host=127.0.0.1
+user=user1
+passwd=xxxx
+port=3306
+databae=xxxx
+
+enablexsrf = true
+xsrfkey = xxxxxxxxxxxxxxxxxxxxxxx
+xsrfexpire = 3600
+

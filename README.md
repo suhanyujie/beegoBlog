@@ -5,6 +5,9 @@
 * beego 1.10.*
 * 模板 layui轻博客
 
+## install
+* `cp conf/app.conf.example conf/app.conf`,修改配置文件
+
 ## 关于beego
 ### orm关联模型的一些理解
 * 在关联模型中，t1表中有个成员属性Profile，它是关联到表t2的一个字段

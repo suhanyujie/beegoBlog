@@ -2,3 +2,4 @@
 /beegoBlog
 /.idea
 /.env
+conf/app.conf
