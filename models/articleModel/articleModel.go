@@ -25,7 +25,7 @@ type ConditionType struct {
 	Value    string
 }
 
-const articleTable = "blog_articles_copy1"
+const articleTable = "blog_articles"
 
 //数据包的初始化
 func init() {
@@ -41,7 +41,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	orm.RegisterModel(new(BlogArticlesCopy1), new(BlogContent))
+	orm.RegisterModel(new(BlogArticles), new(BlogContent))
 	orm.RegisterModel(new(TestUser), new(TestProfile))
 	err = orm.RunSyncdb("default", false, true)
 	if err != nil {
