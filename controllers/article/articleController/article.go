@@ -45,6 +45,7 @@ func (this *ArticleController) Get() {
 	}
 	this.Data["nextPage"] = nextPage
 	pagi := myUtils.NewPaginator(this.Ctx.Request, int(pageSize), total)
+	this.Data["year"] = time.Now().Format("2006")
 	this.Data["paginator"] = pagi
 	this.Data["Lang"] = "zh-CN"
 
